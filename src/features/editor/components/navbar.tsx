@@ -2,16 +2,18 @@
 
 import { CiFileOn } from "react-icons/ci";
 import { BsCloudCheck } from "react-icons/bs";
-import { 
-  ChevronDown, 
-  Download, 
-  MousePointerClick, 
-  Redo2, 
+import {
+  ChevronDown,
+  Download,
+  MousePointerClick,
+  Redo2,
   Undo2
 } from "lucide-react";
 
+import { ActiveTool } from "@/features/editor/types";
 import { Logo } from "@/features/editor/components/logo";
 
+import { cn } from "@/lib/utils";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -22,7 +24,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export const Navbar = () => {
+interface NavbarProps {
+  activeTool: ActiveTool;
+  onChangeActiveTool: (tool: ActiveTool) => void;
+};
+
+export const Navbar = ({
+  activeTool,
+  onChangeActiveTool,
+}: NavbarProps) => {
   return (
     <nav className="w-full flex items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
       <Logo />
@@ -36,7 +46,7 @@ export const Navbar = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-60">
             <DropdownMenuItem
-              onClick={() => {}} // TODO: Add functionality
+              onClick={() => { }} // TODO: Add functionality
               className="flex items-center gap-x-2"
             >
               <CiFileOn className="size-8" />
@@ -54,8 +64,8 @@ export const Navbar = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {}} // TODO: Add functionality
-            className="" // TODO: add dynamic class
+            onClick={() => onChangeActiveTool("select")}
+            className={cn(activeTool === "select" && "bg-gray-100")}
           >
             <MousePointerClick className="size-4" />
           </Button>
@@ -64,7 +74,7 @@ export const Navbar = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {}} // TODO: Add functionality
+            onClick={() => { }} // TODO: Add functionality
             className="" // TODO: add dynamic class
           >
             <Undo2 className="size-4" />
@@ -74,7 +84,7 @@ export const Navbar = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {}} // TODO: Add functionality
+            onClick={() => { }} // TODO: Add functionality
             className="" // TODO: add dynamic class
           >
             <Redo2 className="size-4" />
@@ -98,7 +108,7 @@ export const Navbar = () => {
             <DropdownMenuContent align="end" className="min-w-60">
               <DropdownMenuItem
                 className="flex items-center gap-x-2"
-                onClick={() => {}} // TODO: Add functionality
+                onClick={() => { }} // TODO: Add functionality
               >
                 <CiFileOn className="size-8" />
                 <div>
@@ -110,7 +120,7 @@ export const Navbar = () => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="flex items-center gap-x-2"
-                onClick={() => {}} // TODO: Add functionality
+                onClick={() => { }} // TODO: Add functionality
               >
                 <CiFileOn className="size-8" />
                 <div>
@@ -122,7 +132,7 @@ export const Navbar = () => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="flex items-center gap-x-2"
-                onClick={() => {}} // TODO: Add functionality
+                onClick={() => { }} // TODO: Add functionality
               >
                 <CiFileOn className="size-8" />
                 <div>
@@ -134,7 +144,7 @@ export const Navbar = () => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="flex items-center gap-x-2"
-                onClick={() => {}} // TODO: Add functionality
+                onClick={() => { }} // TODO: Add functionality
               >
                 <CiFileOn className="size-8" />
                 <div>
