@@ -1,16 +1,31 @@
-import {
-  BuildEditorProps,
-  Editor,
-  CIRCLE_OPTIONS,
-  RECTANGLE_OPTIONS,
-  TRIANGLE_OPTIONS,
-  DIAMOND_OPTIONS,
-} from "@/features/editor/types";
 import { fabric } from "fabric";
 import { useCallback, useState, useMemo } from "react";
-import { useAutoResize } from "./use-auto-resize";
 
-const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
+import {
+  Editor,
+  FILL_COLOR,
+  STROKE_WIDTH,
+  STROKE_COLOR,
+  CIRCLE_OPTIONS,
+  DIAMOND_OPTIONS,
+  TRIANGLE_OPTIONS,
+  BuildEditorProps,
+  RECTANGLE_OPTIONS,
+} from "@/features/editor/types";
+import { isTextType } from "@/features/editor/utils";
+import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
+import { useCanvasEvents } from "@/features/editor/hooks/use-canvas-events";
+
+const buildEditor = ({
+  canvas,
+  fillColor,
+  setFillColor,
+  strokeColor,
+  setStrokeColor,
+  strokeWidth,
+  setStrokeWidth,
+  selectedObjects,
+}: BuildEditorProps): Editor => {
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
   };
@@ -19,9 +34,7 @@ const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
     const workspace = getWorkspace();
     const center = workspace?.getCenterPoint();
 
-    if (!center) {
-      return;
-    }
+    if (!center) return;
 
     // @ts-ignore
     canvas._centerObject(object, center);
@@ -34,37 +47,80 @@ const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
   };
 
   return {
-    addCircle: () => {
-      const circle = new fabric.Circle({
-        ...CIRCLE_OPTIONS,
+    changeFillColor: (value: string) => {
+      setFillColor(value);
+      canvas.getActiveObjects().forEach((object) => {
+        object.set({ fill: value });
       });
-      addToCanvas(circle);
+      canvas.renderAll();
+    },
+    changeStrokeColor: (value: string) => {
+      setStrokeColor(value);
+      canvas.getActiveObjects().forEach((object) => {
+        // Text types don't have stroke
+        if (isTextType(object.type)) {
+          object.set({ fill: value });
+          return;
+        }
+
+        object.set({ stroke: value });
+      });
+      canvas.renderAll();
+    },
+    changeStrokeWidth: (value: number) => {
+      setStrokeWidth(value);
+      canvas.getActiveObjects().forEach((object) => {
+        object.set({ strokeWidth: value });
+      });
+      canvas.renderAll();
+    },
+    addCircle: () => {
+      const object = new fabric.Circle({
+        ...CIRCLE_OPTIONS,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth,
+      });
+
+      addToCanvas(object);
     },
     addSoftRectangle: () => {
-      const softRectangle = new fabric.Rect({
-        ...RECTANGLE_OPTIONS,
-      });
-      addToCanvas(softRectangle);
-    },
-    addRectangle: () => {
-      const rectangle = new fabric.Rect({
+      const object = new fabric.Rect({
         ...RECTANGLE_OPTIONS,
         rx: 50,
         ry: 50,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth,
       });
-      addToCanvas(rectangle);
+
+      addToCanvas(object);
+    },
+    addRectangle: () => {
+      const object = new fabric.Rect({
+        ...RECTANGLE_OPTIONS,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth,
+      });
+
+      addToCanvas(object);
     },
     addTriangle: () => {
-      const triangle = new fabric.Triangle({
+      const object = new fabric.Triangle({
         ...TRIANGLE_OPTIONS,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth,
       });
-      addToCanvas(triangle);
+
+      addToCanvas(object);
     },
     addInverseTriangle: () => {
       const HEIGHT = TRIANGLE_OPTIONS.height;
       const WIDTH = TRIANGLE_OPTIONS.width;
 
-      const inverseTriangle = new fabric.Polygon(
+      const object = new fabric.Polygon(
         [
           { x: 0, y: 0 },
           { x: WIDTH, y: 0 },
@@ -72,15 +128,19 @@ const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
         ],
         {
           ...TRIANGLE_OPTIONS,
+          fill: fillColor,
+          stroke: strokeColor,
+          strokeWidth: strokeWidth,
         }
       );
-      addToCanvas(inverseTriangle);
+
+      addToCanvas(object);
     },
     addDiamond: () => {
       const HEIGHT = DIAMOND_OPTIONS.height;
       const WIDTH = DIAMOND_OPTIONS.width;
 
-      const diamond = new fabric.Polygon(
+      const object = new fabric.Polygon(
         [
           { x: WIDTH / 2, y: 0 },
           { x: WIDTH, y: HEIGHT / 2 },
@@ -89,20 +149,37 @@ const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
         ],
         {
           ...DIAMOND_OPTIONS,
+          fill: fillColor,
+          stroke: strokeColor,
+          strokeWidth: strokeWidth,
         }
       );
-      addToCanvas(diamond);
+      addToCanvas(object);
     },
+    canvas,
+    fillColor,
+    strokeColor,
+    strokeWidth,
+    selectedObjects,
   };
 };
-
 export const useEditor = () => {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
+
+  const [fillColor, setFillColor] = useState(FILL_COLOR);
+  const [strokeColor, setStrokeColor] = useState(STROKE_COLOR);
+  const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH);
 
   useAutoResize({
     canvas,
     container,
+  });
+
+  useCanvasEvents({
+    canvas,
+    setSelectedObjects,
   });
 
   const editor = useMemo(() => {
@@ -112,8 +189,15 @@ export const useEditor = () => {
 
     return buildEditor({
       canvas,
+      fillColor,
+      strokeWidth,
+      strokeColor,
+      setFillColor,
+      setStrokeColor,
+      setStrokeWidth,
+      selectedObjects,
     });
-  }, [canvas]);
+  }, [canvas, fillColor, strokeWidth, strokeColor, selectedObjects]);
 
   const init = useCallback(
     ({
