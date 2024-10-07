@@ -1,5 +1,5 @@
 import { ActiveTool, Editor } from "@/features/editor/types";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ export const Toolbar = ({
 }: ToolbarProps) => {
     const fillColor = editor?.getActiveFillColor();
     const strokeColor = editor?.getActiveStrokeColor();
+    const fontFamily = editor?.getActiveFontFamily();
 
     const selectedObjectType = editor?.selectedObjects[0]?.type;
     const isText = isTextType(selectedObjectType);
@@ -80,6 +81,24 @@ export const Toolbar = ({
                             )}
                         >
                             <BsBorderWidth className="size-4" />
+                        </Button>
+                    </Hint>
+                </div>
+            )}
+            {isText && (
+                <div className="flex items-center h-full justify-center">
+                    <Hint label="Font" side="bottom" sideOffset={5}>
+                        <Button
+                            onClick={() => onChangeActiveTool("font")}
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                                "w-auto px-2 text-sm",
+                                activeTool === "font" && "bg-gray-100"
+                            )}
+                        >
+                            <div className="max-w-[100px] truncate">{fontFamily}</div>
+                            <ChevronDown className="size-4 ml-2 shrink-0" />
                         </Button>
                     </Hint>
                 </div>
