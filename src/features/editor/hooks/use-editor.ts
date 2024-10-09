@@ -16,6 +16,7 @@ import {
   TEXT_OPTIONS,
   FONT_FAMILY,
   FONT_WEIGHT,
+  FONT_SIZE,
 } from "@/features/editor/types";
 import { isTextType } from "@/features/editor/utils";
 import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
@@ -73,6 +74,24 @@ const buildEditor = ({
 
       return selectedObject.get("opacity") || 1;
     },
+    changeFontSize: (value: number) => {
+      canvas.getActiveObjects().forEach((object) => {
+        if(isTextType(object.type)){
+          (object as fabric.Textbox).set({fontSize: value});
+        }
+      });
+      canvas.renderAll();
+    },
+    getActiveFontSize: () => {
+      const selectedObject = selectedObjects[0];
+
+      if (!selectedObject) {
+        return FONT_SIZE;
+      }
+
+      return (selectedObject as fabric.Textbox).get("fontSize") || FONT_SIZE;
+    },
+
     changeTextAlign: (value: string) => {
       canvas.getActiveObjects().forEach((object) => {
         if(isTextType(object.type)){
