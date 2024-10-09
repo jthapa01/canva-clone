@@ -1,5 +1,7 @@
-import { ActiveTool, Editor } from "@/features/editor/types";
-import { ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { FaBold, FaItalic, FaStrikethrough, FaUnderline } from "react-icons/fa";
+import { ActiveTool, Editor, FONT_WEIGHT } from "@/features/editor/types";
+import { ArrowUp, ArrowDown, ChevronDown, AlignLeft, AlignCenter, AlignRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
@@ -18,12 +20,63 @@ export const Toolbar = ({
     activeTool,
     onChangeActiveTool,
 }: ToolbarProps) => {
-    const fillColor = editor?.getActiveFillColor();
-    const strokeColor = editor?.getActiveStrokeColor();
-    const fontFamily = editor?.getActiveFontFamily();
+    const initialFillColor = editor?.getActiveFillColor();
+    const initialStrokeColor = editor?.getActiveStrokeColor();
+    const initialFontFamily = editor?.getActiveFontFamily();
+    const initialFontWeight = editor?.getActiveFontWeight() || FONT_WEIGHT;
+    const initialFontStyle = editor?.getActiveFontStyle();
+    const initialFontUnderline = editor?.getActiveFontUnderline();
+    const initialFontLinethrough = editor?.getActveFontLinethrough();
+    const initialTextAlign = editor?.getActiveTextAlign();
 
+    const [properties, setProperties] = useState({
+        fillColor: initialFillColor,
+        strokeColor: initialStrokeColor,
+        fontFamily: initialFontFamily,
+        fontWeight: initialFontWeight,
+        fontStyle: initialFontStyle,
+        fontUnderline: initialFontUnderline,
+        fontLinethrough: initialFontLinethrough,
+        textAlign: initialTextAlign,
+    });
+
+    const selectedObject = editor?.selectedObjects[0];
     const selectedObjectType = editor?.selectedObjects[0]?.type;
     const isText = isTextType(selectedObjectType);
+
+    const onChangeTextAlign = (value: string) => {
+        if (!selectedObject) return;
+        editor?.changeTextAlign(value);
+        setProperties({ ...properties, textAlign: value });
+    };
+
+    const toggleBold = () => {
+        if (!selectedObject) return;
+        const newValue = properties.fontWeight > 500 ? 500 : 700;
+        editor?.changeFontWeight(newValue);
+        setProperties({ ...properties, fontWeight: newValue });
+    };
+
+    const toggleItalic = () => {
+        if (!selectedObject) return;
+        const newValue = properties.fontStyle === "italic" ? "normal" : "italic";
+        editor?.changeFontStyle(newValue);
+        setProperties({ ...properties, fontStyle: newValue });
+    };
+
+    const toggleLinethrough = () => {
+        if (!selectedObject) return;
+        const newValue = !properties.fontLinethrough;
+        editor?.changeFontLinethrough(newValue);
+        setProperties({ ...properties, fontLinethrough: newValue });
+    };
+
+    const toggleUnderline = () => {
+        if (!selectedObject) return;
+        const newValue = !properties.fontUnderline;
+        editor?.changeFontUnderline(newValue);
+        setProperties({ ...properties, fontUnderline: newValue });
+    };
 
     if (editor?.selectedObjects.length === 0) {
         return (
@@ -45,7 +98,7 @@ export const Toolbar = ({
                     >
                         <div
                             className="rounded-sm size-4 border"
-                            style={{ backgroundColor: fillColor }}
+                            style={{ backgroundColor: properties.fillColor }}
                         />
                     </Button>
                 </Hint>
@@ -63,7 +116,7 @@ export const Toolbar = ({
                         >
                             <div
                                 className="rounded-sm size-4 border-2 bg-white"
-                                style={{ borderColor: strokeColor }}
+                                style={{ borderColor: properties.strokeColor }}
                             />
                         </Button>
                     </Hint>
@@ -97,8 +150,120 @@ export const Toolbar = ({
                                 activeTool === "font" && "bg-gray-100"
                             )}
                         >
-                            <div className="max-w-[100px] truncate">{fontFamily}</div>
+                            <div className="max-w-[100px] truncate">{properties.fontFamily}</div>
                             <ChevronDown className="size-4 ml-2 shrink-0" />
+                        </Button>
+                    </Hint>
+                </div>
+            )}
+            {isText && (
+                <div className="flex items-center h-full justify-center">
+                    <Hint label="Bold" side="bottom" sideOffset={5}>
+                        <Button
+                            onClick={toggleBold}
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                                properties.fontWeight > 500 && "bg-gray-100"
+                            )}
+                        >
+                            <FaBold className="size-4" />
+                        </Button>
+                    </Hint>
+                </div>
+            )}
+            {isText && (
+                <div className="flex items-center h-full justify-center">
+                    <Hint label="Italic" side="bottom" sideOffset={5}>
+                        <Button
+                            onClick={toggleItalic}
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                                properties.fontStyle === "italic" && "bg-gray-100"
+                            )}
+                        >
+                            <FaItalic className="size-4" />
+                        </Button>
+                    </Hint>
+                </div>
+            )}
+            {isText && (
+                <div className="flex items-center h-full justify-center">
+                    <Hint label="Underline" side="bottom" sideOffset={5}>
+                        <Button
+                            onClick={toggleUnderline}
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                                properties.fontUnderline && "bg-gray-100"
+                            )}
+                        >
+                            <FaUnderline className="size-4" />
+                        </Button>
+                    </Hint>
+                </div>
+            )}
+            {isText && (
+                <div className="flex items-center h-full justify-center">
+                    <Hint label="Strikethrough" side="bottom" sideOffset={5}>
+                        <Button
+                            onClick={toggleLinethrough}
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                                properties.fontLinethrough && "bg-gray-100"
+                            )}
+                        >
+                            <FaStrikethrough className="size-4" />
+                        </Button>
+                    </Hint>
+                </div>
+            )}
+            {isText && (
+                <div className="flex items-center h-full justify-center">
+                    <Hint label="Align left" side="bottom" sideOffset={5}>
+                        <Button
+                            onClick={() => onChangeTextAlign("left")}
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                                properties.textAlign === "left" && "bg-gray-100"
+                            )}
+                        >
+                            <AlignLeft className="size-4" />
+                        </Button>
+                    </Hint>
+                </div>
+            )}
+            {isText && (
+                <div className="flex items-center h-full justify-center">
+                    <Hint label="Align center" side="bottom" sideOffset={5}>
+                        <Button
+                            onClick={() => onChangeTextAlign("center")}
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                                properties.textAlign === "center" && "bg-gray-100"
+                            )}
+                        >
+                            <AlignCenter className="size-4" />
+                        </Button>
+                    </Hint>
+                </div>
+            )}
+            {isText && (
+                <div className="flex items-center h-full justify-center">
+                    <Hint label="Align right" side="bottom" sideOffset={5}>
+                        <Button
+                            onClick={() => onChangeTextAlign("right")}
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                                properties.textAlign === "right" && "bg-gray-100"
+                            )}
+                        >
+                            <AlignRight className="size-4" />
                         </Button>
                     </Hint>
                 </div>
