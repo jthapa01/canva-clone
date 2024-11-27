@@ -57,6 +57,21 @@ const buildEditor = ({
   };
 
   return {
+    addImage: (value: string) => {
+      fabric.Image.fromURL(
+        value,
+        (image) => {
+          const workspace = getWorkspace();
+          image.scaleToWidth(workspace?.width || 0);
+          image.scaleToHeight(workspace?.height || 0);
+
+          addToCanvas(image);
+        },
+        {
+          crossOrigin: "anonymous",
+        }
+      );
+    },
     delete: () => {
       canvas.getActiveObjects().forEach((object) => {
         canvas.remove(object);
@@ -83,8 +98,8 @@ const buildEditor = ({
     },
     changeFontSize: (value: number) => {
       canvas.getActiveObjects().forEach((object) => {
-        if(isTextType(object.type)){
-          (object as fabric.Textbox).set({fontSize: value});
+        if (isTextType(object.type)) {
+          (object as fabric.Textbox).set({ fontSize: value });
         }
       });
       canvas.renderAll();
@@ -101,8 +116,8 @@ const buildEditor = ({
 
     changeTextAlign: (value: string) => {
       canvas.getActiveObjects().forEach((object) => {
-        if(isTextType(object.type)){
-          (object as fabric.Textbox).set({textAlign: value});
+        if (isTextType(object.type)) {
+          (object as fabric.Textbox).set({ textAlign: value });
         }
       });
       canvas.renderAll();
@@ -118,8 +133,8 @@ const buildEditor = ({
     },
     changeFontUnderline: (value: boolean) => {
       canvas.getActiveObjects().forEach((object) => {
-        if(isTextType(object.type)){
-          (object as fabric.Textbox).set({underline: value});
+        if (isTextType(object.type)) {
+          (object as fabric.Textbox).set({ underline: value });
         }
       });
       canvas.renderAll();
@@ -135,8 +150,8 @@ const buildEditor = ({
     },
     changeFontLinethrough: (value: boolean) => {
       canvas.getActiveObjects().forEach((object) => {
-        if(isTextType(object.type)){
-          (object as fabric.Textbox).set({linethrough: value});
+        if (isTextType(object.type)) {
+          (object as fabric.Textbox).set({ linethrough: value });
         }
       });
       canvas.renderAll();
@@ -413,7 +428,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [fillColor, setFillColor] = useState(FILL_COLOR);
   const [strokeColor, setStrokeColor] = useState(STROKE_COLOR);
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH);
-  const [strokeDashArray, setStrokeDashArray] = useState<number[]>(STROKE_DASH_ARRAY);
+  const [strokeDashArray, setStrokeDashArray] =
+    useState<number[]>(STROKE_DASH_ARRAY);
 
   useAutoResize({
     canvas,
