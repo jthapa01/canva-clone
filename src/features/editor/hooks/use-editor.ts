@@ -61,7 +61,26 @@ const buildEditor = ({
   };
 
   return {
+    autoZoom,
     getWorkspace,
+    zoomIn: () => {
+      let zoomRatio = canvas.getZoom();
+      zoomRatio += 0.05;
+      const center = canvas.getCenter();
+      canvas.zoomToPoint(
+        new fabric.Point(center.left, center.top),
+        zoomRatio > 1 ? 1 : zoomRatio
+      );
+    },
+    zoomOut: () => {
+      let zoomRatio = canvas.getZoom();
+      zoomRatio -= 0.05;
+      const center = canvas.getCenter();
+      canvas.zoomToPoint(
+        new fabric.Point(center.left, center.top),
+        zoomRatio < 0.2 ? 0.2 : zoomRatio
+      );
+    },
     changeSize: (value: { width: number; height: number }) => {
       const workspace = getWorkspace();
       workspace?.set(value);
@@ -476,7 +495,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 
   const { copy, paste } = useClipboard({ canvas });
 
-  const {autoZoom} = useAutoResize({
+  const { autoZoom } = useAutoResize({
     canvas,
     container,
   });
