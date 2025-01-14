@@ -7,6 +7,7 @@ import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
 
@@ -20,11 +21,13 @@ declare module "next-auth/jwt" {
     id: string | undefined;
   }
 }
+
 declare module "@auth/core/jwt" {
   interface JWT {
     id: string | undefined;
   }
 }
+
 export default {
   adapter: DrizzleAdapter(db),
   providers: [
@@ -35,6 +38,7 @@ export default {
       },
       async authorize(credentials) {
         const validatedFields = CredentialsSchema.safeParse(credentials);
+
         if (!validatedFields.success) {
           return null;
         }
@@ -47,30 +51,29 @@ export default {
           .where(eq(users.email, email));
 
         const user = query[0];
+
         if (!user || !user.password) {
           return null;
         }
 
-        const passwordsMatch = await bcrypt.compare(password, user.password);
+        const passwordsMatch = await bcrypt.compare(
+          password,
+          user.password,
+        );
+
         if (!passwordsMatch) {
           return null;
         }
 
         return user;
       },
-    }),
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    }), 
+    GitHub, 
+    Google
   ],
   pages: {
     signIn: "/sign-in",
-    error: "/sign-in",
+    error: "/sign-in"
   },
   session: {
     strategy: "jwt",
@@ -80,13 +83,15 @@ export default {
       if (token.id) {
         session.user.id = token.id;
       }
+
       return session;
     },
     jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = user.id;  
       }
+
       return token;
-    },
+    }
   },
-} satisfies NextAuthConfig;
+} satisfies NextAuthConfig

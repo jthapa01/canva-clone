@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
 import { QueryProvider } from "@/components/query-provider";
 
-interface ProviderProps {
-    children: React.ReactNode;
+interface ProvidersProps {
+  children: React.ReactNode;
 };
 
-export const Providers = ({ children }: ProviderProps) => {
-    return(
-        <QueryProvider>
-            {children}
-        </QueryProvider>
-    );
+export const Providers = ({ children }: ProvidersProps) => {
+  return (
+    <QueryProvider>
+      {children}
+    </QueryProvider>
+  );
 };

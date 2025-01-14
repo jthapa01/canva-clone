@@ -46,10 +46,9 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
     ) {
       return;
     }
-    // viewportTransform[0] and [3] are scaling factors
-    // translation factor viewportTransform[4]: move along x axis
+
     viewportTransform[4] = canvas.width / 2 - workspaceCenter.x * viewportTransform[0];
-    // translation factor viewportTransform[5]: move along y axis
+
     viewportTransform[5] = canvas.height / 2 - workspaceCenter.y * viewportTransform[3];
 
     canvas.setViewportTransform(viewportTransform);
@@ -77,5 +76,6 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
       }
     };
   }, [canvas, container, autoZoom]);
+
   return { autoZoom };
 };

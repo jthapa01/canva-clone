@@ -10,19 +10,19 @@ interface UseHotkeysProps {
   paste: () => void;
 }
 
-export const useHotKeys = ({
+export const useHotkeys = ({
   canvas,
   undo,
   redo,
   save,
   copy,
-  paste,
+  paste
 }: UseHotkeysProps) => {
   useEvent("keydown", (event) => {
     const isCtrlKey = event.ctrlKey || event.metaKey;
     const isBackspace = event.key === "Backspace";
     const isInput = ["INPUT", "TEXTAREA"].includes(
-      (event.target as HTMLElement).tagName
+      (event.target as HTMLElement).tagName,
     );
 
     if (isInput) return;
@@ -61,12 +61,13 @@ export const useHotKeys = ({
       event.preventDefault();
       canvas?.discardActiveObject();
 
-      const allObjects = canvas?.getObjects().filter((obj) => obj.selectable);
+      const allObjects = canvas?.getObjects()
+        .filter((object) => object.selectable);
+
       canvas?.setActiveObject(
         new fabric.ActiveSelection(allObjects, { canvas })
       );
+      canvas?.renderAll();
     }
-
-    canvas?.renderAll();
   });
 };

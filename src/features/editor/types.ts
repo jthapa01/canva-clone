@@ -39,7 +39,7 @@ export const filters = [
   "gamma",
 ];
 
-export const fonts= [
+export const fonts = [
   "Arial",
   "Arial Black",
   "Verdana",
@@ -162,7 +162,7 @@ export const TRIANGLE_OPTIONS = {
 export const TEXT_OPTIONS = {
   type: "textbox",
   left: 100,
-  right: 100,
+  top: 100,
   fill: FILL_COLOR,
   fontSize: FONT_SIZE,
   fontFamily: FONT_FAMILY,
@@ -225,14 +225,14 @@ export interface Editor {
   changeFontUnderline: (value: boolean) => void;
   getActiveFontUnderline: () => boolean;
   changeFontLinethrough: (value: boolean) => void;
-  getActveFontLinethrough: () => boolean;
+  getActiveFontLinethrough: () => boolean;
   changeFontStyle: (value: string) => void;
   getActiveFontStyle: () => string;
   changeFontWeight: (value: number) => void;
   getActiveFontWeight: () => number;
   getActiveFontFamily: () => string;
   changeFontFamily: (value: string) => void;
-  addText: (value:string, options?: ITextboxOptions) => void;
+  addText: (value: string, options?: ITextboxOptions) => void;
   getActiveOpacity: () => number;
   changeOpacity: (value: number) => void;
   bringForward: () => void;
@@ -240,8 +240,8 @@ export interface Editor {
   changeStrokeWidth: (value: number) => void;
   changeFillColor: (value: string) => void;
   changeStrokeColor: (value: string) => void;
-  addCircle: () => void;
   changeStrokeDashArray: (value: number[]) => void;
+  addCircle: () => void;
   addSoftRectangle: () => void;
   addRectangle: () => void;
   addTriangle: () => void;
@@ -253,4 +253,4 @@ export interface Editor {
   getActiveStrokeWidth: () => number;
   getActiveStrokeDashArray: () => number[];
   selectedObjects: fabric.Object[];
-}
+};

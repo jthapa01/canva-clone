@@ -3,7 +3,7 @@ import { handle } from "hono/vercel";
 import { AuthConfig, initAuthConfig } from "@hono/auth-js";
 
 import ai from "./ai";
-import users from "./users"
+import users from "./users";
 import images from "./images";
 
 import authConfig from "@/auth.config";
@@ -12,9 +12,13 @@ import authConfig from "@/auth.config";
 export const runtime = "nodejs";
 
 function getAuthConfig(c: Context): AuthConfig {
+  const authSecret = process.env.AUTH_SECRET;
+  if (!authSecret) {
+    throw new Error("AUTH_SECRET environment variable is not defined");
+  }
   return {
-    secret: c.env.AUTH_SECRET,
-    ...authConfig
+    secret: authSecret,
+    ...authConfig as AuthConfig,
   };
 };
 
@@ -25,7 +29,7 @@ app.use("*", initAuthConfig(getAuthConfig));
 const routes = app
   .route("/ai", ai)
   .route("/users", users)
-  .route("/images", images)
+  .route("/images", images);
 
 export const GET = handle(app);
 export const POST = handle(app);

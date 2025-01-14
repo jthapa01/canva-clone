@@ -3,18 +3,19 @@ import { useCallback, useRef } from "react";
 
 interface UseClipboardProps {
   canvas: fabric.Canvas | null;
-}
+};
 
-export const useClipboard = ({ canvas }: UseClipboardProps) => {
-  const clipboard = useRef<any>(null); // persists across re-renders of the componen
+export const useClipboard = ({
+  canvas
+}: UseClipboardProps) => {
+  const clipboard = useRef<any>(null);
 
-  // copy fn is memoized to ensure not recreated on every render
   const copy = useCallback(() => {
     canvas?.getActiveObject()?.clone((cloned: any) => {
-      clipboard.current = cloned; // This reference persists across re-renders
+      clipboard.current = cloned;
     });
   }, [canvas]);
-
+  
   const paste = useCallback(() => {
     if (!clipboard.current) return;
 

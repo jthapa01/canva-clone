@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
+
 import { client } from "@/lib/hono";
 
 type ResponseType = InferResponseType<typeof client.api.ai["generate-image"]["$post"]>;
@@ -16,5 +17,6 @@ export const useGenerateImage = () => {
       return await response.json();
     },
   });
+
   return mutation;
 };
