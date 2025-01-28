@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    domains: ['9owvtkqo74.ufs.sh'],
     remotePatterns: [
       {
         protocol: "https",
