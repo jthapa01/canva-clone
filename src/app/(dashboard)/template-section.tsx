@@ -1,9 +1,11 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { Loader, TriangleAlert } from "lucide-react";
 import { ResponseType, useGetTemplates } from "@/features/projects/api/use-get-templates";
 import { useCreateProject } from "@/features/projects/api/use-create-project";
 import { TemplateCard } from "./template-card";
+
 export const TemplatesSection = () => {
     const router = useRouter();
     const mutation = useCreateProject();
