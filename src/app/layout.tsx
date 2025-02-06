@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
+import { Modals } from "@/components/modals";
 
 import "./globals.css";
 
@@ -26,6 +27,7 @@ export default async function RootLayout({
         <body className={inter.className}>
           <Providers>
             <Toaster />
+            <Modals />
             {children}
           </Providers>
         </body>
