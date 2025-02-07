@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
 import { Modals } from "@/components/modals";
+import { SubscriptionAlert } from "@/features/subscriptions/components/subscription-alert";
 
 import "./globals.css";
 
@@ -28,6 +29,7 @@ export default async function RootLayout({
           <Providers>
             <Toaster />
             <Modals />
+            <SubscriptionAlert />
             {children}
           </Providers>
         </body>
